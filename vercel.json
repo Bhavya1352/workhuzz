@@ -1,7 +1,0 @@
-{
-  "version": 2,
-  "buildCommand": "cd workhuzz && npm install && npm run build",
-  "outputDirectory": "workhuzz/dist",
-  "installCommand": "cd workhuzz && npm install",
-  "framework": "vite"
-}
