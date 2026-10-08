@@ -1,0 +1,63 @@
+﻿import {createContext,useContext,useEffect,useState} from 'react';
+import {Routes,Route,Navigate,Link,useNavigate} from 'react-router-dom';
+import {DEPTS,TODAY,D,iso,addDays,isWknd,nowT,mins,fmtDur,t12,dur,pad,seedEmps,seedAtt,getStatus,ACCOUNTS} from './data';
+
+const Ctx=createContext();
+const useApp=()=>useContext(Ctx);
+const load=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))||f()}catch{return f()}};
+const ST=['Present','Late','Absent','Leave','Weekend','Upcoming'];
+
+const statusLabel=s=>{
+ if(s==='Leave')return 'On Leave';
+ if(s==='Weekend'||s==='â€”')return 'Weekend / Off';
+ if(s==='Upcoming')return 'Upcoming';
+ return s||'â€”';
+};
+
+function Provider({children}){
+ const [emps,setEmps]=useState(()=>load('wh_e',seedEmps));
+ const [att,setAtt]=useState(()=>load('wh_a',seedAtt));
+ const [user,setUser]=useState(()=>load('wh_u',()=>null));
+ const [q,setQ]=useState('');
+ const [toast,setToast]=useState('');
+ const [theme,setTheme]=useState(()=>localStorage.getItem('wh_theme')||'light');
+
+ useEffect(()=>localStorage.setItem('wh_e',JSON.stringify(emps)),[emps]);
+ useEffect(()=>localStorage.setItem('wh_a',JSON.stringify(att)),[att]);
+ useEffect(()=>localStorage.setItem('wh_u',JSON.stringify(user)),[user]);
+ useEffect(()=>{
+  document.documentElement.setAttribute('data-theme',theme);
+  localStorage.setItem('wh_theme',theme);
+ },[theme]);
+
+ const say=m=>{setToast(m);setTimeout(()=>setToast(''),2600)};
+ const st=(id,d)=>getStatus(att,id,d,emps.find(e=>e.id===id));
+ const toggleTheme=()=>setTheme(t=>t==='dark'?'light':'dark');
+
+ const v={
+  emps,att,user,q,setQ,say,st,setUser,theme,setTheme,toggleTheme,
+  addEmp:e=>setEmps(l=>[...l,{...e,id:'E'+pad(l.length+Math.floor(Math.random()*900)+13),status:'Active',leave:12}]),
+  editEmp:e=>setEmps(l=>l.map(x=>x.id===e.id?{...x,...e}:x)),
+  delEmp:id=>setEmps(l=>l.filter(x=>x.id!==id)),
+  checkIn:id=>{const t=nowT();setAtt(a=>({...a,[id+'|'+TODAY]:{in:t,out:null,status:mins(t)>570?'Late':'Present'}}))},
+  checkOut:id=>{const prev=att[id+'|'+TODAY];if(!prev)return;const o=nowT();setAtt(a=>({...a,[id+'|'+TODAY]:{...prev,out:o,status:mins(prev.in)>570?'Late':'Present'}}));},
+  reset:()=>{setEmps(seedEmps());setAtt(seedAtt())}
+ };
+
+ return (
+  <Ctx.Provider value={v}>
+   {children}
+   <div className="toast" role="status" aria-live="polite">{toast&&<span>{toast}</span>}</div>
+  </Ctx.Provider>
+ );
+}
+
+const Badge=({s,label})=><span className={'badge s-'+s}>{label||statusLabel(s)}</span>;
+const Field=({label,error,...p})=>(
+ <label className="field">
+  <span>{label}</span>
+  {p.options?<select {...p}>{p.options.map(o=><option key={o}>{o}</option>)}</select>:<input {...p}/>}
+  {error&&<em role="alert">{error}</em>}
+ </label>
+);
+
