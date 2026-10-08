@@ -148,6 +148,11 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
 html,
 body {
   margin: 0;
@@ -263,12 +268,19 @@ button {
   justify-content: center;
   gap: 6px;
   text-align: center;
-  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
 }
 
 .btn:hover {
   background: var(--ac-hover);
   border-color: var(--ac-hover);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .btn.ghost {
@@ -280,6 +292,7 @@ button {
 .btn.ghost:hover {
   background: var(--surface-hover);
   border-color: var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .btn.danger {
@@ -400,6 +413,21 @@ button {
   align-items: center;
 }
 
+@keyframes landFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.land {
+  animation: landFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 .hero {
   padding: 80px 5vw 64px;
   display: grid;
@@ -414,6 +442,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  animation: landFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-tag {
@@ -453,6 +482,12 @@ button {
   align-items: center;
   gap: 12px;
   justify-self: center;
+  animation: landFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-ring:hover {
+  transform: translateY(-4px) scale(1.02);
 }
 
 .hero-ring svg {
@@ -539,8 +574,15 @@ button {
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 20px;
-  padding: 24px 0;
+  padding: 24px 16px;
   border-top: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.feat-list>div:hover {
+  background: var(--surface-hover);
+  padding-left: 20px;
 }
 
 .feat-list>div:first-child {
@@ -587,12 +629,14 @@ button {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
 }
 
 .role-card:hover {
+  transform: translateY(-4px);
   border-color: var(--ac);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 12px 28px -6px rgba(79, 70, 229, 0.12), 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 
 .role-icon {
@@ -627,6 +671,13 @@ button {
   max-width: 1200px;
   margin: 0 auto 64px auto;
   border-radius: 12px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.3);
 }
 
 .cta h2 {
@@ -713,15 +764,23 @@ button {
   }
 }
 
-/* ==========================================================================
-   LOGIN PAGE (Left Side: Dark Charcoal Block)
-   ========================================================================== */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 .login {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: var(--bg);
+  animation: pageFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .login aside {
@@ -1057,6 +1116,7 @@ button {
   flex-direction: column;
   gap: 28px;
   max-width: 1200px;
+  animation: pageFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .pt {
