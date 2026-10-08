@@ -65,22 +65,28 @@ const Field=({label,error,...p})=>(
 function Landing(){
  const {emps,st,theme,toggleTheme}=useApp();
  const n=emps.length;
- const pr=emps.filter(e=>['Present','Late'].includes(st(e.id,TODAY))).length;
+ const present=emps.filter(e=>st(e.id,TODAY)==='Present').length;
+ const late=emps.filter(e=>st(e.id,TODAY)==='Late').length;
+ const absent=emps.filter(e=>st(e.id,TODAY)==='Absent').length;
+ const leave=emps.filter(e=>st(e.id,TODAY)==='Leave').length;
+ const weekend=emps.filter(e=>st(e.id,TODAY)==='Weekend').length;
+ const upcoming=emps.filter(e=>st(e.id,TODAY)==='Upcoming').length;
+ const working=n-weekend-upcoming;
+ const rate=working>0?Math.round((present+late)/working*100):0;
  const F=[
-  ['Employee management','Add, edit and retire people records with department, role and contact details in one list.'],
-  ['Attendance tracking','One-tap check-in and check-out, with late arrivals flagged automatically after 9:30 AM.'],
-  ['Weekly attendance','See Monday to Sunday for every employee, filtered by department or name.'],
-  ['Weekend attendance','Weekends are off by default. Scheduled Saturday shifts show real hours, never false absences.'],
-  ['HR and admin views','Admins see the whole company; HR works by department; employees see only their own record.']
+  ['Employee records','Add, edit, and manage employee profiles with department, role, and contact details.'],
+  ['Attendance tracking','One-tap check-in and check-out. Late arrivals are flagged after 9:30 AM.'],
+  ['Weekly view','See Monday through Sunday attendance for every employee, filtered by department or name.'],
+  ['Weekend handling','Weekends are off by default. Scheduled Saturday shifts show real hours, not false absences.'],
+  ['Role-based access','Admins see the entire company. HR works by department. Employees see only their own record.']
  ];
 
  return (
   <div className="land">
    <header className="top">
-    <b className="logo">WorkHuzz</b>
+    <Link to="/" className="logo">WorkHuzz</Link>
     <nav aria-label="Main">
      <a href="#features">Features</a>
-     <a href="#preview">Preview</a>
      <a href="#roles">Roles</a>
     </nav>
     <div>
@@ -92,67 +98,105 @@ function Landing(){
     </div>
    </header>
    <section className="hero">
-    <h1>Manage your workforce better.</h1>
-    <p>WorkHuzz keeps employee records and attendance in one place, so HR stops chasing spreadsheets and employees stop asking whether their day was counted.</p>
-    <div className="row">
-     <Link className="btn lg" to="/login">Get Started</Link>
-     <Link className="btn ghost lg" to="/login">Login</Link>
-    </div>
-   </section>
-   <div className="hero-stats">
-    <div>
-     <small>Total employees</small>
-     <strong>{n}</strong>
-     <div className="bar-wrap"><div className="bar-fill" style={{width:'100%'}}/></div>
-    </div>
-    <div>
-     <small>Present today</small>
-     <strong style={{color:'var(--present)'}}>{pr}</strong>
-     <div className="bar-wrap"><div className="bar-fill" style={{width:`${n?Math.round(pr/n*100):0}%`,background:'var(--present)'}}/></div>
-    </div>
-    <div>
-     <small>Attendance rate</small>
-     <strong style={{color:'var(--ac)'}}>{n?Math.round(pr/n*100):0}%</strong>
-     <div className="bar-wrap"><div className="bar-fill" style={{width:`${n?Math.round(pr/n*100):0}%`}}/></div>
-    </div>
-   </div>
-   <section id="preview" className="preview">
-    <div className="frame">
-     <div className="sum">
-      <div><small>Employees</small><strong>{n}</strong></div>
-      <div><small>Present today</small><strong>{pr}</strong></div>
-      <div><small>Attendance rate</small><strong>{n?Math.round(pr/n*100):0}%</strong></div>
+    <div className="hero-content">
+     <span className="hero-tag">Workforce Management</span>
+     <h1>Manage your workforce better.</h1>
+     <p>WorkHuzz brings employee records, attendance and workforce visibility into one place—no more spreadsheets, no more missing data.</p>
+     <div className="hero-ctas">
+      <Link className="btn lg" to="/login">Get Started</Link>
+      <button className="btn ghost lg" onClick={() => document.querySelector('.hero-preview')?.scrollIntoView({behavior:'smooth'})}>View Preview</button>
      </div>
-     <table>
-      <thead>
-       <tr><th>Employee</th><th>Department</th><th>Check-in</th><th>Status</th></tr>
-      </thead>
-      <tbody>
-       {emps.slice(0,4).map(e=>(
-        <tr key={e.id}>
-         <td>{e.name}</td>
-         <td>{e.department}</td>
-         <td>{t12(useApp().att[e.id+'|'+TODAY]?.in)}</td>
-         <td><Badge s={st(e.id,TODAY)}/></td>
-        </tr>
-       ))}
-      </tbody>
-     </table>
+
+    </div>
+    <div className="hero-preview">
+     <div className="dashboard-preview">
+      <div className="dashboard-header">
+       <div className="dashboard-title">Today's Attendance</div>
+       <div className="dashboard-date">{TODAY}</div>
+      </div>
+      <div className="dashboard-metrics">
+       <div className="metric-card">
+        <span className="metric-label">Attendance Rate</span>
+        <span className="metric-value">{rate}%</span>
+       </div>
+       <div className="metric-row">
+        <div className="metric-small">
+         <span className="metric-label">Present</span>
+         <span className="metric-value present">{present}</span>
+        </div>
+        <div className="metric-small">
+         <span className="metric-label">Late</span>
+         <span className="metric-value late">{late}</span>
+        </div>
+        <div className="metric-small">
+         <span className="metric-label">Absent</span>
+         <span className="metric-value absent">{absent}</span>
+        </div>
+        <div className="metric-small">
+         <span className="metric-label">On Leave</span>
+         <span className="metric-value leave">{leave}</span>
+        </div>
+       </div>
+      </div>
+      <div className="weekly-viz">
+       <div className="viz-title">This Week</div>
+       <div className="viz-bars">
+        {['Mon','Tue','Wed','Thu','Fri'].map((day,i)=>{
+         const weekDate=addDays(TODAY,-((D(TODAY).getDay()+6)%7)+i);
+         const weekPresent=emps.filter(e=>['Present','Late'].includes(st(e.id,weekDate))).length;
+         const weekWorking=emps.filter(e=>!isWknd(weekDate)).length;
+         const weekRate=weekWorking>0?Math.round(weekPresent/weekWorking*100):0;
+         return (
+          <div key={day} className="viz-bar">
+           <span className="viz-day">{day}</span>
+           <div className="viz-track">
+            <div className="viz-fill" style={{width:`${weekRate}%`}}/>
+           </div>
+           <span className="viz-pct">{weekRate}%</span>
+          </div>
+         );
+        })}
+       </div>
+      </div>
+     </div>
     </div>
    </section>
    <section id="features" className="feat">
-    <h2>Everything attendance needs, nothing it doesn’t</h2>
-    <dl>{F.map(([t,d])=><div key={t}><dt>{t}</dt><dd>{d}</dd></div>)}</dl>
+    <h2>Everything your workforce needs</h2>
+    <dl className="feat-list">{F.map(([t,d])=><div key={t}><dt>{t}</dt><dd>{d}</dd></div>)}</dl>
    </section>
-   {/* Final CTA Section: styled as #1d2129 Dark Charcoal Block */}
-   <section id="roles" className="cta">
-    <h2>Sign in as Admin, HR or Employee</h2>
-    <p>Demo accounts are listed on the login page.</p>
-    <Link className="btn lg" to="/login">Go to login</Link>
+   <section id="roles" className="roles">
+    <h2>Designed for every role</h2>
+    <div className="role-cards">
+     <div className="role-card">
+      <div className="role-icon">👁</div>
+      <h3>Admin</h3>
+      <p>See the whole workforce at a glance. Track company-wide attendance, manage employees and oversee all departments from one dashboard.</p>
+     </div>
+     <div className="role-card">
+      <div className="role-icon">👥</div>
+      <h3>HR</h3>
+      <p>Manage people, departments and attendance. Filter by team, track leave balances and handle employee records efficiently.</p>
+     </div>
+     <div className="role-card">
+      <div className="role-icon">👤</div>
+      <h3>Employee</h3>
+      <p>Track your own attendance and working time. Check in and out with one tap, view your weekly schedule and leave balance.</p>
+     </div>
+    </div>
+   </section>
+   <section className="cta">
+    <h2>One place for your entire workforce.</h2>
+    <p>Give admins, HR teams and employees a simpler way to manage attendance.</p>
+    <div className="cta-actions">
+     <Link className="btn lg" to="/login">Get Started</Link>
+     <Link className="btn ghost lg" to="/login">View Demo</Link>
+    </div>
    </section>
    <footer>
-    <b className="logo">WorkHuzz</b>
+    <Link to="/" className="logo">WorkHuzz</Link>
     <small>© 2026 WorkHuzz. Demo build with local data only.</small>
+
    </footer>
   </div>
  );
@@ -286,13 +330,13 @@ function Pager({n,page,set,per}){
 
 const Empty=({t,d})=><div className="empty"><b>{t}</b><p>{d}</p></div>;
 
-function Filters({dept,setDept,stat,setStat,stats}){
+function Filters({dept,setDept,stat,setStat,stats,disabledDeptLabel}){
  return (
   <div className="row filters">
    <label className="filter-label">Department
-    <select value={dept} onChange={e=>setDept(e.target.value)}>
-     <option value="">All departments</option>
-     {DEPTS.map(d=><option key={d}>{d}</option>)}
+    <select value={dept} onChange={e=>setDept(e.target.value)} disabled={!!disabledDeptLabel}>
+     <option value="">{disabledDeptLabel||'All departments'}</option>
+     {!disabledDeptLabel&&DEPTS.map(d=><option key={d}>{d}</option>)}
     </select>
    </label>
    {setStat&&<label className="filter-label">Status
@@ -387,17 +431,21 @@ function Overview({role}){
  );
 }
 
-function DailyTable(){
+function DailyTable({role,user}){
  const {emps,att,st,q}=useApp();
  const [dept,setDept]=useState('');
  const [stat,setStat]=useState('');
  const [pg,setPg]=useState(1);
- const rows=emps.filter(e=>match(e,q)&&(!dept||e.department===dept)&&(!stat||st(e.id,TODAY)===stat));
+ const baseFilter=role==='employee'?e=>e.id===user.empId:role==='hr'?e=>e.department===user.department:e=>true;
+ const initialDept=role==='hr'?user.department:'';
+ const disabledDeptLabel=role==='hr'?user.department:role==='employee'?user.department:null;
+ useEffect(()=>{if(role==='hr')setDept(initialDept)},[role,initialDept]);
+ const rows=emps.filter(e=>baseFilter(e)&&match(e,q)&&(!dept||e.department===dept)&&(!stat||st(e.id,TODAY)===stat));
  const per=6;
  useEffect(()=>setPg(1),[q,dept,stat]);
  return (
   <>
-   <Filters {...{dept,setDept,stat,setStat,stats:ST}}/>
+   <Filters {...{dept,setDept,stat,setStat,stats:ST,disabledDeptLabel}}/>
    <div className="scroll">
     <table>
      <thead>
@@ -426,13 +474,17 @@ function DailyTable(){
  );
 }
 
-function Employees({canEdit}){
+function Employees({canEdit,role,user}){
  const {emps,q,st,addEmp,editEmp,delEmp,say}=useApp();
  const [dept,setDept]=useState('');
  const [stat,setStat]=useState('');
  const [pg,setPg]=useState(1);
  const [m,setM]=useState(null);
- const rows=emps.filter(e=>match(e,q)&&(!dept||e.department===dept)&&(!stat||e.status===stat));
+ const baseFilter=role==='employee'?e=>e.id===user.empId:role==='hr'?e=>e.department===user.department:e=>true;
+ const initialDept=role==='hr'?user.department:'';
+ const disabledDeptLabel=role==='hr'?user.department:role==='employee'?user.department:null;
+ useEffect(()=>{if(role==='hr')setDept(initialDept)},[role,initialDept]);
+ const rows=emps.filter(e=>baseFilter(e)&&match(e,q)&&(!dept||e.department===dept)&&(!stat||e.status===stat));
  const per=6;
  useEffect(()=>setPg(1),[q,dept,stat]);
  const rate=id=>{
@@ -450,9 +502,9 @@ function Employees({canEdit}){
   <section>
    <div className="split">
     <h3>Employees</h3>
-    <button className="btn" onClick={()=>setM({t:'add'})}>Add employee</button>
+    {canEdit&&<button className="btn" onClick={()=>setM({t:'add'})}>Add employee</button>}
    </div>
-   <Filters {...{dept,setDept,stat,setStat,stats:['Active','On Leave']}}/>
+   <Filters {...{dept,setDept,stat,setStat,stats:['Active','On Leave'],disabledDeptLabel}}/>
    <div className="scroll">
     <table>
      <thead>
@@ -466,11 +518,13 @@ function Employees({canEdit}){
         <td>{e.role}</td>
         <td>{rate(e.id)}%</td>
         <td><Badge s={e.status==='Active'?'Present':'Leave'} label={e.status}/></td>
-        <td className="acts">
+        {canEdit?<td className="acts">
          <button className="lnk" onClick={()=>setM({t:'view',e})}>View</button>
          <button className="lnk" onClick={()=>setM({t:'edit',e})}>Edit</button>
          <button className="lnk dng" onClick={()=>setM({t:'del',e})}>Remove</button>
-        </td>
+        </td>:<td className="acts">
+         <button className="lnk" onClick={()=>setM({t:'view',e})}>View</button>
+        </td>}
        </tr>
       ))}
      </tbody>
@@ -559,13 +613,17 @@ function Departments(){
  );
 }
 
-function Weekly(){
+function Weekly({role,user}){
  const {emps,att,st,q}=useApp();
  const [off,setOff]=useState(0);
  const [dept,setDept]=useState('');
  const mon=addDays(TODAY,-((D(TODAY).getDay()+6)%7)+off*7);
  const days=[...Array(7)].map((_,i)=>addDays(mon,i));
- const rows=emps.filter(e=>match(e,q)&&(!dept||e.department===dept));
+ const baseFilter=role==='employee'?e=>e.id===user.empId:role==='hr'?e=>e.department===user.department:e=>true;
+ const initialDept=role==='hr'?user.department:'';
+ const disabledDeptLabel=role==='hr'?user.department:role==='employee'?user.department:null;
+ useEffect(()=>{if(role==='hr')setDept(initialDept)},[role,initialDept]);
+ const rows=emps.filter(e=>baseFilter(e)&&match(e,q)&&(!dept||e.department===dept));
  return (
   <section>
    <div className="split">
@@ -576,7 +634,7 @@ function Weekly(){
      <button className="btn ghost sm" disabled={off>4} onClick={()=>setOff(off+1)}>Next week</button>
     </div>
    </div>
-   <Filters dept={dept} setDept={setDept}/>
+   <Filters dept={dept} setDept={setDept} disabledDeptLabel={disabledDeptLabel}/>
    <div className="scroll">
     <table className="wk">
      <thead>
@@ -611,11 +669,11 @@ function Weekly(){
  );
 }
 
-function Attendance(){
+function Attendance({role,user}){
  return (
   <>
-   <section><h3>Daily attendance</h3><DailyTable/></section>
-   <Weekly/>
+   <section><h3>Daily attendance</h3><DailyTable role={role} user={user}/></section>
+   <Weekly role={role} user={user}/>
   </>
  );
 }
@@ -835,9 +893,9 @@ function Shell({role}){
  const greet=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
  const page={
   Overview:<Overview role={role}/>,
-  Employees:<Employees/>,
+  Employees:<Employees canEdit={role!=='employee'} role={role} user={user}/>,
   Departments:<Departments/>,
-  Attendance:<Attendance/>,
+  Attendance:<Attendance role={role} user={user}/>,
   Reports:<Reports/>,
   Settings:<Settings/>,
   'My attendance':<Mine/>

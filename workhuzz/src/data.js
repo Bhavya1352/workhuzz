@@ -23,4 +23,4 @@ export const seedAtt=()=>{const a={};
  return a};
 export const getStatus=(att,id,date,emp)=>{const x=att[id+'|'+date];if(x)return x.status;if(emp&&emp.status==='On Leave'&&date===TODAY)return 'Leave';
  return date>TODAY?(isWknd(date)?'Weekend':'Upcoming'):isWknd(date)?'Weekend':'Absent'};
-export const ACCOUNTS=[{email:'admin@workhuzz.com',password:'admin123',role:'admin',name:'Admin'},{email:'hr@workhuzz.com',password:'hr12345',role:'hr',name:'Sana Khan',empId:'E04'},{email:'aarav@workhuzz.com',password:'emp12345',role:'employee',name:'Aarav Sharma',empId:'E01'}];
+export const ACCOUNTS=[{email:'admin@workhuzz.com',password:'admin123',role:'admin',name:'Admin'},{email:'hr@workhuzz.com',password:'hr12345',role:'hr',name:'Sana Khan',empId:'E04',department:'HR'},{email:'aarav@workhuzz.com',password:'emp12345',role:'employee',name:'Aarav Sharma',empId:'E01',department:'Engineering'}];
