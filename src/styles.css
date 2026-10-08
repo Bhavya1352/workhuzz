@@ -1,20 +1,25 @@
 /* ==========================================================================
-   WORKHUZZ GLOBAL COLOR SYSTEM & DESIGN TOKENS
-   Primary Accent: Indigo-Blue (#3a43c8)
-   Restrained Neutral Palette
-   Controlled Centrally via CSS Variables
+   WORKHUZZ 3 CORE ROOT COLOR SYSTEM
+   1. Brand Accent:   #4F46E5 (Indigo)
+   2. Dark Neutral:   #111827 (Text / Contrast)
+   3. Light Neutral:  #F8FAFC (Background / Surface)
    ========================================================================== */
 
 :root {
-  /* Base Light Theme */
-  --bg: #F8FAFC;
+  /* THE 3 CORE ROOT COLORS */
+  --color-primary: #4F46E5;    /* 1. Primary Brand Accent */
+  --color-dark:    #111827;    /* 2. Dark Neutral / Primary Text */
+  --color-light:   #F8FAFC;    /* 3. Light Neutral / Background */
+
+  /* Derived Surface & Text Tokens */
+  --bg: var(--color-light);
   --surface: #FFFFFF;
-  --text: #111827;
+  --text: var(--color-dark);
   --text-secondary: #5d6573;
   --border: #E5E7EB;
 
-  /* Primary Accent: Indigo-Blue */
-  --ac: #4F46E5;
+  /* Accent Mapped to Primary */
+  --ac: var(--color-primary);
   --ac-hover: #4338ca;
   --acs: #eef2ff;
   --ac-btn-text: #ffffff;
@@ -32,7 +37,7 @@
   --off-bg: #eceef1;
 
   /* Dark Charcoal Blocks */
-  --charcoal: #1d2129;
+  --charcoal: var(--color-dark);
   --charcoal-text: #ffffff;
   --charcoal-secondary: #9aa2b1;
   --charcoal-border: rgba(255, 255, 255, 0.12);
@@ -40,9 +45,9 @@
   /* Neutrals & States */
   --surface-hover: #f5f6f8;
   --input-bg: #ffffff;
-  --modal-scrim: rgba(29, 33, 41, 0.6);
-  --shadow-sm: 0 1px 3px rgba(29, 33, 41, 0.05);
-  --shadow-md: 0 4px 14px rgba(29, 33, 41, 0.08);
+  --modal-scrim: rgba(17, 24, 39, 0.6);
+  --shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.05);
+  --shadow-md: 0 4px 14px rgba(17, 24, 39, 0.08);
 
   /* Legacy Aliases for Safety */
   --pri: var(--ac);
@@ -350,33 +355,46 @@ button {
    ========================================================================== */
 
 .top {
+  width: 100%;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.top-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 16px 5vw;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 16px 32px;
+  box-sizing: border-box;
 }
 
-.top nav {
+.top .logo {
+  margin-left: 56px;
+}
+
+.top nav,
+.top-inner nav {
   display: flex;
   gap: 24px;
 }
 
-.top nav a {
+.top nav a,
+.top-inner nav a {
   text-decoration: none;
   color: var(--text-secondary);
   font-weight: 500;
   transition: color 0.15s ease;
 }
 
-.top nav a:hover {
+.top nav a:hover,
+.top-inner nav a:hover {
   color: var(--text);
 }
 
-.top div {
+.top-inner > div {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -413,9 +431,10 @@ button {
 }
 
 .hero h1 {
-  font-size: clamp(40px, 5vw, 64px);
-  line-height: 1.05;
-  font-weight: 800;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: clamp(38px, 4.8vw, 64px);
+  line-height: 1.08;
+  font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text);
   max-width: 560px;
@@ -606,7 +625,8 @@ button {
   flex-direction: column;
   align-items: center;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto 64px auto;
+  border-radius: 12px;
 }
 
 .cta h2 {
@@ -652,45 +672,45 @@ button {
   border-color: var(--charcoal-border);
 }
 
-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  padding: 32px 5vw;
+.land-footer {
   border-top: 1px solid var(--border);
   background: var(--surface);
-  max-width: 1200px;
+  width: 100%;
+}
+
+.land-footer p {
+  max-width: 1240px;
   margin: 0 auto;
-}
-
-footer .logo {
-  font-weight: 800;
-  color: var(--ac);
-  text-decoration: none;
-  font-size: 20px;
-  letter-spacing: -0.01em;
-}
-
-footer small {
-  color: var(--text-secondary);
+  padding: 22px 32px;
+  box-sizing: border-box;
   font-size: 13px;
-}
-
-footer nav {
-  display: flex;
-  gap: 24px;
-}
-
-footer nav a {
   color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
 }
 
-footer nav a:hover {
-  color: var(--text);
+.land-footer strong {
+  color: var(--ac);
+  font-weight: 700;
+}
+
+.ft-divider {
+  display: none;
+}
+
+.ft-copy {
+  color: var(--text-tertiary, var(--text-secondary));
+}
+
+@media (max-width: 768px) {
+  .land-footer p {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 18px 20px;
+  }
 }
 
 /* ==========================================================================
@@ -730,22 +750,32 @@ footer nav a:hover {
   max-width: 380px;
 }
 
-.login form {
+.login-panel {
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 48px 6vw;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.login form {
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  justify-content: center;
-  align-self: center;
-  max-width: 520px;
+  gap: 12px;
+  max-width: 420px;
   width: 100%;
-  background: var(--surface);
+  background: transparent;
+  box-sizing: border-box;
 }
 
 .login-topbar {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .field {
@@ -1615,7 +1645,12 @@ tr.sel {
     padding: 32px 6vw;
   }
 
-  .top nav {
+  .top-inner {
+    padding: 14px 20px;
+  }
+
+  .top nav,
+  .top-inner nav {
     display: none;
   }
 

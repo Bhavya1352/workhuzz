@@ -171,21 +171,23 @@ function Landing() {
   return (
     <div className="land">
       <header className="top">
-        <Link to="/" className="logo">WorkHuzz</Link>
-        <nav aria-label="Main">
-          <a href="#features" onClick={e => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }) }}>Features</a>
-          <a href="#roles" onClick={e => { e.preventDefault(); document.getElementById('roles')?.scrollIntoView({ behavior: 'smooth' }) }}>Roles</a>
-        </nav>
-        <div>
-          <button className="theme-btn" aria-label="Toggle theme" onClick={toggleTheme}>{theme === 'dark' ? '◐ Light' : '◑ Dark'}</button>
-          <Link className="btn ghost" to="/login">Login</Link>
-          <Link className="btn" to="/login">Get Started</Link>
+        <div className="top-inner">
+          <Link to="/" className="logo">WorkHuzz</Link>
+          <nav aria-label="Main">
+            <a href="#features" onClick={e => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }) }}>Features</a>
+            <a href="#roles" onClick={e => { e.preventDefault(); document.getElementById('roles')?.scrollIntoView({ behavior: 'smooth' }) }}>Roles</a>
+          </nav>
+          <div>
+            <button className="theme-btn" aria-label="Toggle theme" onClick={toggleTheme}>{theme === 'dark' ? '◐ Light' : '◑ Dark'}</button>
+            <Link className="btn ghost" to="/login">Login</Link>
+            <Link className="btn" to="/login">Get Started</Link>
+          </div>
         </div>
       </header>
       <section className="hero">
         <div className="hero-content">
           <span className="hero-tag">Workforce Management</span>
-          <h1>Manage your workforce better.</h1>
+          <h1>Manage your workforce<br />all in one place.</h1>
           <p>WorkHuzz brings employee records, attendance and workforce visibility into one place—no more spreadsheets, no more missing data.</p>
           <div className="hero-ctas">
             <Link className="btn lg" to="/login">Get Started</Link>
@@ -214,9 +216,12 @@ function Landing() {
           <Link className="btn ghost lg" to="/login">View Demo</Link>
         </div>
       </section>
-      <footer>
-        <Link to="/" className="logo">WorkHuzz</Link>
-        <small>© 2026 WorkHuzz. Demo build with local data only.</small>
+      <footer className="land-footer">
+        <p>
+          <span className="ft-tagline"><strong>WorkHuzz</strong> — Simple workforce management for modern teams</span>
+          <span className="ft-divider">|</span>
+          <span className="ft-copy">© {new Date().getFullYear()} WorkHuzz · Privacy · Terms</span>
+        </p>
       </footer>
     </div>
   );
@@ -257,33 +262,35 @@ function Login() {
     <main className="login">
       <aside>
         <Link to="/" className="logo">WorkHuzz</Link>
-        <h1>Manage your workforce better.</h1>
+        <h1>Manage your<br />workforce better.</h1>
         <p>Sign in to see attendance, people and weekly schedules for your company.</p>
       </aside>
-      <form onSubmit={go} noValidate>
-        <div className="login-topbar">
-          <button type="button" className="theme-btn" onClick={toggleTheme}>{theme === 'dark' ? '◐ Light' : '◑ Dark'}</button>
-        </div>
-        <h2>Sign in</h2>
-        {msg === 'error' && <p className="alert err" role="alert">That email and password don't match a demo account. Use one from the list below.</p>}
-        {msg === 'ok' && <p className="alert ok" role="status">Signed in. Opening your dashboard…</p>}
-        <Field label="Email" type="email" autoComplete="email" value={f.email} error={er.email} onChange={e => setF({ ...f, email: e.target.value })} />
-        <Field label="Password" type={show ? 'text' : 'password'} autoComplete="current-password" value={f.password} error={er.password} onChange={e => setF({ ...f, password: e.target.value })} />
-        <div className="split">
-          <label className="chk"><input type="checkbox" checked={f.remember} onChange={e => setF({ ...f, remember: e.target.checked })} />Remember me</label>
-          <button type="button" className="lnk" onClick={() => setShow(!show)}>{show ? 'Hide' : 'Show'} password</button>
-        </div>
-        <button className="btn full" disabled={busy}>{busy ? 'Signing in…' : 'Sign In'}</button>
-        <button type="button" className="lnk" onClick={() => say('Password reset is disabled in this demo. Use a demo account.')}>Forgot password?</button>
-        <div className="demo">
-          <b>Demo accounts (not real authentication)</b>
-          {ACCOUNTS.map(a => (
-            <button type="button" key={a.role} onClick={() => setF({ ...f, email: a.email, password: a.password })}>
-              <span>{a.role[0].toUpperCase() + a.role.slice(1)}</span>{a.email} / {a.password}
-            </button>
-          ))}
-        </div>
-      </form>
+      <div className="login-panel">
+        <form onSubmit={go} noValidate>
+          <div className="login-topbar">
+            <button type="button" className="theme-btn" onClick={toggleTheme}>{theme === 'dark' ? '◐ Light' : '◑ Dark'}</button>
+          </div>
+          <h2>Sign in</h2>
+          {msg === 'error' && <p className="alert err" role="alert">That email and password don't match a demo account. Use one from the list below.</p>}
+          {msg === 'ok' && <p className="alert ok" role="status">Signed in. Opening your dashboard…</p>}
+          <Field label="Email" type="email" autoComplete="email" value={f.email} error={er.email} onChange={e => setF({ ...f, email: e.target.value })} />
+          <Field label="Password" type={show ? 'text' : 'password'} autoComplete="current-password" value={f.password} error={er.password} onChange={e => setF({ ...f, password: e.target.value })} />
+          <div className="split">
+            <label className="chk"><input type="checkbox" checked={f.remember} onChange={e => setF({ ...f, remember: e.target.checked })} />Remember me</label>
+            <button type="button" className="lnk" onClick={() => setShow(!show)}>{show ? 'Hide' : 'Show'} password</button>
+          </div>
+          <button className="btn full" disabled={busy}>{busy ? 'Signing in…' : 'Sign In'}</button>
+          <button type="button" className="lnk" onClick={() => say('Password reset is disabled in this demo. Use a demo account.')}>Forgot password?</button>
+          <div className="demo">
+            <b>Demo accounts (not real authentication)</b>
+            {ACCOUNTS.map(a => (
+              <button type="button" key={a.role} onClick={() => setF({ ...f, email: a.email, password: a.password })}>
+                <span>{a.role[0].toUpperCase() + a.role.slice(1)}</span>{a.email} / {a.password}
+              </button>
+            ))}
+          </div>
+        </form>
+      </div>
     </main>
   );
 }
@@ -319,7 +326,7 @@ function EmpForm({ init, onSave, onCancel, showSalary }) {
       <Field label="Joining date" type="date" value={f.joined} onChange={s('joined')} error={er.joined} />
       <Field label="Employment type" options={['Full-time', 'Part-time', 'Contract', 'Intern']} value={f.employmentType || 'Full-time'} onChange={s('employmentType')} />
       {showSalary && <Field label="Monthly salary (₹)" type="number" value={f.salary || ''} onChange={s('salary')} />}
-      <div className="full2"><small style={{color:'var(--text-secondary)',fontWeight:600}}>Emergency Contact</small></div>
+      <div className="full2"><small style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Emergency Contact</small></div>
       <Field label="Contact name" value={f.emergencyContact?.name || ''} onChange={sEc('name')} />
       <Field label="Contact phone" value={f.emergencyContact?.phone || ''} onChange={sEc('phone')} />
       <Field label="Relation" value={f.emergencyContact?.relation || ''} onChange={sEc('relation')} />
@@ -762,7 +769,7 @@ function Reports({ scopeEmps }) {
   const { att, st, say } = useApp();
   const csv = () => {
     const rows = [['ID', 'Name', 'Department', 'Check-in', 'Check-out', 'Status'],
-      ...scopeEmps.map(e => [e.id, e.name, e.department, att[e.id + '|' + TODAY]?.in || '', att[e.id + '|' + TODAY]?.out || '', statusLabel(st(e.id, TODAY))])];
+    ...scopeEmps.map(e => [e.id, e.name, e.department, att[e.id + '|' + TODAY]?.in || '', att[e.id + '|' + TODAY]?.out || '', statusLabel(st(e.id, TODAY))])];
     const b = new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(b);
     a.download = `attendance-${TODAY}.csv`; a.click(); say('Report downloaded');
