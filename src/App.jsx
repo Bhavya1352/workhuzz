@@ -1230,6 +1230,7 @@ function Shell({ role }) {
   const nav = useNavigate();
   const items = NAV_ITEMS[role];
   const [tab, setTab] = useState(items[0]);
+  const [tabLoading, setTabLoading] = useState(false);
   const [dr, setDr] = useState(false);
   const [menu, setMenu] = useState('');
   const [read, setRead] = useState([]);
@@ -1241,7 +1242,21 @@ function Shell({ role }) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const switchTab = t => { setTab(t); setDr(false); setMenu('') };
+  const switchTab = t => {
+    setDr(false);
+    setMenu('');
+    if (t === tab) return;
+    setTab(t);
+    setTabLoading(true);
+  };
+
+  // Hold the new page back for a beat so the switch never feels instant
+  useEffect(() => {
+    if (!tabLoading) return;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const t = setTimeout(() => setTabLoading(false), 850);
+    return () => clearTimeout(t);
+  }, [tabLoading, tab]);
   const first = user.name.split(' ')[0];
   const hr = new Date().getHours();
   const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
@@ -1347,8 +1362,27 @@ function Shell({ role }) {
         </header>
         <main className="page">
           <h2 className="pt">{tab}</h2>
-          {page}
+          {tabLoading ? <TabLoader label={tab} /> : page}
         </main>
+      </div>
+    </div>
+  );
+}
+
+function TabLoader({ label }) {
+  return (
+    <div className="tab-loader" role="status" aria-live="polite">
+      <div className="tab-loader-head">
+        <div className="tab-loader-spinner">
+          <span /><span /><span />
+        </div>
+        <p className="tab-loader-text">Loading {label}…</p>
+      </div>
+      <div className="tab-loader-skeleton">
+        <div className="sk sk-row" />
+        <div className="sk sk-row" />
+        <div className="sk sk-block" />
+        <div className="sk sk-row" />
       </div>
     </div>
   );
