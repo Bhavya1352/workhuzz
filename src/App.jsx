@@ -1361,20 +1361,44 @@ function Guard({ role }) {
   return <Shell role={role} key={role} />;
 }
 
+const DASHBOARD_PATHS = ['/admin', '/hr', '/employee'];
+
+function PageLoader() {
+  return (
+    <div className="page-loader-overlay">
+      <div className="page-loader-box">
+        <div className="page-loader-logo">WorkHuzz</div>
+        <div className="page-loader-spinner">
+          <span /><span /><span />
+        </div>
+        <p className="page-loader-text">Loading your workspace…</p>
+      </div>
+    </div>
+  );
+}
+
 function AnimatedApp() {
   const location = useLocation();
-  const [barState, setBarState] = useState(''); // '', 'active', 'done'
+  const [barState, setBarState] = useState('');
+  const [showLoader, setShowLoader] = useState(false);
+  const prevPath = useState(location.pathname)[0];
 
   useEffect(() => {
-    // Start progress bar
+    const isDashboardRoute = DASHBOARD_PATHS.some(p => location.pathname.startsWith(p));
+    const comingFromLogin = prevPath === '/login' || prevPath === '/';
+
+    // Show full-screen loader when going to a dashboard route
+    if (isDashboardRoute) {
+      setShowLoader(true);
+      const hideTimer = setTimeout(() => setShowLoader(false), 1400);
+      return () => clearTimeout(hideTimer);
+    }
+
+    // Top progress bar for all other route changes
     setBarState('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // After 380ms (animation duration), mark done so it completes to 100% + fades
     const doneTimer = setTimeout(() => setBarState('done'), 380);
-    // After done animation completes, reset
     const resetTimer = setTimeout(() => setBarState(''), 800);
-
     return () => {
       clearTimeout(doneTimer);
       clearTimeout(resetTimer);
@@ -1384,7 +1408,8 @@ function AnimatedApp() {
   return (
     <>
       <div className={`page-progress-bar ${barState}`} />
-      <div key={location.pathname} className="route-view-enter">
+      {showLoader && <PageLoader />}
+      <div key={location.pathname} className={showLoader ? 'route-view-hidden' : 'route-view-enter'}>
         <Routes location={location}>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
