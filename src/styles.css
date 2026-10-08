@@ -331,6 +331,11 @@ html {
 html,
 body {
   margin: 0;
+}
+
+/* Only the viewport scrolls. Setting overflow-x on body too would make it a
+   second scroll container and render a duplicate vertical scrollbar. */
+html {
   overflow-x: hidden;
 }
 
