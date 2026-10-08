@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
 import { DEPTS, TODAY, D, iso, addDays, isWknd, nowT, mins, fmtDur, t12, dur, pad, seedEmps, seedAtt, getStatus, ACCOUNTS, seedLeaves, LEAVE_TYPES, fmtSalary } from './data';
 
 const Ctx = createContext();
@@ -1361,15 +1361,45 @@ function Guard({ role }) {
   return <Shell role={role} key={role} />;
 }
 
+function AnimatedApp() {
+  const location = useLocation();
+  const [barState, setBarState] = useState(''); // '', 'active', 'done'
+
+  useEffect(() => {
+    // Start progress bar
+    setBarState('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // After 380ms (animation duration), mark done so it completes to 100% + fades
+    const doneTimer = setTimeout(() => setBarState('done'), 380);
+    // After done animation completes, reset
+    const resetTimer = setTimeout(() => setBarState(''), 800);
+
+    return () => {
+      clearTimeout(doneTimer);
+      clearTimeout(resetTimer);
+    };
+  }, [location.pathname]);
+
+  return (
+    <>
+      <div className={`page-progress-bar ${barState}`} />
+      <div key={location.pathname} className="route-view-enter">
+        <Routes location={location}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          {['admin', 'hr', 'employee'].map(r => <Route key={r} path={'/' + r} element={<Guard role={r} />} />)}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <Provider>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        {['admin', 'hr', 'employee'].map(r => <Route key={r} path={'/' + r} element={<Guard role={r} />} />)}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <AnimatedApp />
     </Provider>
   );
 }

@@ -148,6 +148,52 @@
   box-sizing: border-box;
 }
 
+/* ==========================================================================
+   PAGE TRANSITION ANIMATIONS
+   ========================================================================== */
+
+@keyframes routeFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.route-view-enter {
+  animation: routeFadeSlideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Top progress bar (NProgress-style) */
+.page-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--ac), #a78bfa);
+  border-radius: 0 2px 2px 0;
+  z-index: 9999;
+  transition: width 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page-progress-bar.active {
+  width: 85%;
+  opacity: 1;
+}
+
+.page-progress-bar.done {
+  width: 100%;
+  opacity: 0;
+  transition: width 0.2s ease, opacity 0.4s ease 0.2s;
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
@@ -762,6 +808,48 @@ button {
     gap: 8px;
     padding: 18px 20px;
   }
+}
+
+/* ==========================================================================
+   GLOBAL PAGE TRANSITION & ROUTE LOADER
+   ========================================================================== */
+
+.page-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--ac), #818cf8);
+  box-shadow: 0 0 10px rgba(79, 70, 229, 0.6);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.page-progress-bar.active {
+  opacity: 1;
+  width: 100%;
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
+@keyframes routeEnterAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(1.5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.route-view-enter {
+  animation: routeEnterAnimation 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  min-height: 100vh;
 }
 
 @keyframes pageFadeIn {
