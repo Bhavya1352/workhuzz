@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
 import { DEPTS, TODAY, D, iso, addDays, isWknd, nowT, mins, fmtDur, t12, dur, pad, seedEmps, seedAtt, getStatus, ACCOUNTS, seedLeaves, LEAVE_TYPES, fmtSalary } from './data';
+import ThemeSwitch from './components/ThemeSwitch';
 
 const Ctx = createContext();
 const useApp = () => useContext(Ctx);
@@ -178,7 +179,7 @@ function Landing() {
             <a href="#roles" onClick={e => { e.preventDefault(); document.getElementById('roles')?.scrollIntoView({ behavior: 'smooth' }) }}>Roles</a>
           </nav>
           <div>
-            <button className="theme-btn" aria-label="Toggle theme" onClick={toggleTheme}>{theme === 'dark' ? '◐ Light' : '◑ Dark'}</button>
+            <ThemeSwitch theme={theme} onToggle={toggleTheme} />
             <Link className="btn ghost" to="/login">Login</Link>
             <Link className="btn" to="/login">Get Started</Link>
           </div>
@@ -268,7 +269,7 @@ function Login() {
       <div className="login-panel">
         <form onSubmit={go} noValidate>
           <div className="login-topbar">
-            <button type="button" className="theme-btn" onClick={toggleTheme}>{theme === 'dark' ? '◐ Light' : '◑ Dark'}</button>
+            <ThemeSwitch theme={theme} onToggle={toggleTheme} />
           </div>
           <h2>Sign in</h2>
           {msg === 'error' && <p className="alert err" role="alert">That email and password don't match a demo account. Use one from the list below.</p>}
@@ -1333,7 +1334,7 @@ function Shell({ role }) {
             <span className="bar-sub">{role === 'employee' ? "Here's your attendance summary." : "Here's how your workforce is doing today."}</span>
           </div>
           {role !== 'employee' && <input className="search" type="search" aria-label="Search employees" placeholder="Search name, department, role" value={q} onChange={e => setQ(e.target.value)} />}
-          <button className="theme-btn" aria-label="Toggle theme" onClick={toggleTheme}>{theme === 'dark' ? '◐ Light' : '◑ Dark'}</button>
+          <ThemeSwitch theme={theme} onToggle={toggleTheme} />
           <div className="pop">
             <button className="btn ghost sm" aria-haspopup="true" aria-expanded={menu === 'n'} onClick={() => setMenu(menu === 'n' ? '' : 'n')}>
               Notifications{unread > 0 && <span className="cnt">{unread}</span>}

@@ -1827,23 +1827,91 @@ tr.sel {
 }
 
 /* Theme Toggle Button */
-.theme-btn {
+/* ==========================================================================
+   THEME SWITCH (sliding pill with sun / moon icons)
+   ========================================================================== */
+
+.theme-switch {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: 36px;
+  width: 80px;
 }
 
-.theme-btn:hover {
+.theme-switch-track {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
   background: var(--surface-hover);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-switch-track:hover {
+  border-color: var(--ac);
+}
+
+.theme-switch-track:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: 2px;
+}
+
+.theme-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  z-index: 10;
+  display: block;
+  height: 28px;
+  width: 28px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-switch-track[data-state="unchecked"] .theme-switch-thumb {
+  transform: translateX(4px);
+}
+
+.theme-switch-track[data-state="checked"] .theme-switch-thumb {
+  transform: translateX(48px);
+}
+
+.theme-switch-icon {
+  position: absolute;
+  inset-block: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  transition: color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.theme-switch-icon.left {
+  left: 9px;
+}
+
+.theme-switch-icon.right {
+  right: 9px;
+}
+
+.theme-switch-icon[data-active="true"] {
+  color: var(--text);
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .settings-card {
